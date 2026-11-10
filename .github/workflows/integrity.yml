@@ -1,0 +1,55 @@
+# Every 15 minutes, and right after a deploy tells the monitor what to expect: ask the live site for every file the last
+# deploy published and compare it with expected/<branch>.json (record 0009 of the website repository). GitHub may
+# start a scheduled run late, or drop one when it is busy, and it picks quiet minutes over the top of the hour. A run
+# that finds a difference fails, which GitHub emails, and opens one issue, which later failing runs update in place
+# rather than add to. This repository is public, so its runs cost no Actions minutes.
+name: Integrity
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  push:
+    branches: [main]
+    paths: ['expected/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integrity
+  cancel-in-progress: false
+
+jobs:
+  integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    env:
+      # The environments to watch. Add production once the first production deploy has written expected/production.json:
+      # a listed environment with no manifest fails the run, so nothing is watched by accident.
+      TARGETS: staging
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - id: check
+        run: node src/check.ts
+      - name: Open the issue, or update the one that is open
+        if: failure() && steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title='The live site differs from what was deployed'
+          number="$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file report.md
+          else
+            gh issue create --title "$title" --body-file report.md
+          fi

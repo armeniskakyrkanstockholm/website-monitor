@@ -1,0 +1,27 @@
+# Weekly, grouped, with a 7-day cooldown so a release that has just been compromised is caught before we adopt it, as
+# in the website repository (its record 0009). The Actions are pinned to full commit SHAs, which Dependabot updates
+# with the version comment.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      npm:
+        patterns: ['*']
+    ignore:
+      # The types follow the Node major we run, 24 (package.json's devEngines): a newer major describes APIs it lacks.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ['*']

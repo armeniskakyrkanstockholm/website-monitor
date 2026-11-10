@@ -1,0 +1,21 @@
+{
+  "name": "website-monitor",
+  "private": true,
+  "type": "module",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=24.22.1",
+      "onFail": "error"
+    }
+  },
+  "scripts": {
+    "check": "tsc -p .",
+    "test": "node --disable-warning=ExperimentalWarning --test 'test/**/*.test.ts'",
+    "verify": "node --disable-warning=ExperimentalWarning src/check.ts"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "7.0.2"
+  }
+}

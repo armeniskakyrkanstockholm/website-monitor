@@ -1,0 +1,30 @@
+# The type check and the tests, on every push and pull request. It holds no secret and its token is read-only, so a
+# pull request from a fork can run it. A push that only changes expected/ (the website's deploy job writes those, once
+# for each deploy) does not.
+name: Checks
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['expected/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm audit signatures
+      - run: npm run check
+      - run: npm test
