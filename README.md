@@ -1,11 +1,11 @@
 # website-monitor
 
-Watches armeniskakyrkansverige.se from outside. Every 15 minutes it asks the live site for every file the last deploy published and compares each one with what the deploy said it should be. If anything differs, the run fails and an issue is opened, and GitHub emails the owners.
+Watches armeniskakyrkansverige.se from outside. Every hour it asks the live site for every file the last deploy published and compares each one with what the deploy said it should be. If anything differs, the run fails and an issue is opened, and GitHub emails the owners.
 
 It is a separate repository, and a public one, for two reasons (record 0009 of the website repository):
 
 - **Independence.** What the site should be is written here by the website's deploy job and is never read from the site. Someone who changed the site could not change this too.
-- **Cost.** Public repositories run Actions for free; checking every 15 minutes would use up a private repository's allowance. Nothing here is secret: the fingerprints and header names describe a public site.
+- **Cost.** Public repositories run Actions for free. A private repository's monthly allowance is limited and shared with the website's own tests, and an hourly check would take a large part of it. Nothing here is secret: the fingerprints and header names describe a public site.
 
 ## What it checks
 

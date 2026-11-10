@@ -1,4 +1,4 @@
-# Every 15 minutes, and right after a deploy tells the monitor what to expect: ask the live site for every file the last
+# Every hour, and right after a deploy tells the monitor what to expect: ask the live site for every file the last
 # deploy published and compare it with expected/<branch>.json (record 0009 of the website repository). GitHub may
 # start a scheduled run late, or drop one when it is busy, and it picks quiet minutes over the top of the hour. A run
 # that finds a difference fails, which GitHub emails, and opens one issue, which later failing runs update in place
@@ -7,7 +7,7 @@ name: Integrity
 
 on:
   schedule:
-    - cron: '7,22,37,52 * * * *'
+    - cron: '7 * * * *'
   push:
     branches: [main]
     paths: ['expected/**']

@@ -24,8 +24,8 @@ describe('the integrity workflow', () => {
     assert.doesNotMatch(workflow, /\b(?:npm|npx|yarn|pnpm)\b/)
   })
 
-  it('runs every 15 minutes off the top of the hour, and when a deploy writes a manifest, and by hand', () => {
-    assert.match(workflow, /cron: '7,22,37,52 \* \* \* \*'/)
+  it('runs every hour, off the top of it, and when a deploy writes a manifest, and by hand', () => {
+    assert.match(workflow, /cron: '7 \* \* \* \*'/)
     assert.match(workflow, /push:\n\s+branches: \[main\]\n\s+paths: \['expected\/\*\*'\]/)
     assert.match(workflow, /workflow_dispatch:/)
   })
